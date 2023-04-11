@@ -37,8 +37,7 @@ const editTaskInLocalStorage = (idForEditing) => {
   const tasks = getTasksFromLocalStorage();
 
   const editingIndex = tasks.findIndex((task) => task.id === idForEditing);
-  let lastTask = tasks.pop();
-  tasks.splice(editingIndex, 1, lastTask);
+  tasks[editingIndex].value = editedText;
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 };
@@ -119,7 +118,6 @@ const removeTask = (event) => {
       const deletedLi = event.target.closest("li");
       let idForRemoval = +deletedLi.dataset.taskId;
       deletedLi.remove();
-
       removeTaskFromLocalStorage(idForRemoval);
     }
   }
@@ -129,14 +127,16 @@ const editTask = (event) => {
   const isEditIcon = event.target.classList.contains("fa-edit");
 
   if (isEditIcon) {
-    editedText = prompt("Чим Ви хочете замінити це завдання?").trim();
+    editedText = prompt(
+      "Чим Ви хочете замінити це завдання?",
+      event.target.closest("li").textContent
+    );
 
     if (editedText) {
       const editedLi = event.target.closest("li");
       let idForEditing = +editedLi.dataset.taskId;
       editedLi.firstChild.textContent = editedText;
 
-      storeTaskInLocalStorage({ id: idForEditing, value: editedText });
       editTaskInLocalStorage(idForEditing);
     }
   }
